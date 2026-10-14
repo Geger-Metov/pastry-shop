@@ -1,0 +1,47 @@
+# Проверки перед коммитом. Установка (один раз в каждом клоне):
+#   uv tool install pre-commit && pre-commit install
+# Проверить всё сразу: pre-commit run --all-files
+repos:
+  # Ruff для бэкенда. Настройки берутся из backend/pyproject.toml.
+  # Версию держите близкой к версии ruff в backend/uv.lock (или: pre-commit autoupdate)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.10
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+        files: ^backend/
+      - id: ruff-format
+        files: ^backend/
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: end-of-file-fixer
+        exclude: ^frontend/pnpm-lock\.yaml$
+      - id: trailing-whitespace
+        exclude: ^frontend/pnpm-lock\.yaml$
+      - id: check-yaml
+        exclude: ^frontend/pnpm-lock\.yaml$
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+
+  # Prettier из зависимостей frontend (нужен выполненный pnpm install)
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier (frontend)
+        language: system
+        files: ^frontend/.*\.(ts|tsx|js|mjs|json|css|md)$
+        exclude: ^frontend/pnpm-lock\.yaml$
+        entry: bash -c 'cd frontend && pnpm exec prettier --write --ignore-unknown "${@#frontend/}"' --
+        pass_filenames: true
+
+  # Запрещаем коммитить .env (шаблон .env.example разрешён)
+  - repo: local
+    hooks:
+      - id: no-dotenv
+        name: не коммитить .env
+        language: fail
+        entry: ".env с секретами нельзя коммитить (используйте .env.example)"
+        files: (^|/)\.env$
