@@ -10,6 +10,7 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .ruff_cache/
+.mypy_cache/
 
 # node
 node_modules/
@@ -17,5 +18,9 @@ node_modules/
 # editors
 .vscode/
 
+# резервные копии БД
+backups/
+
 # my files
 AGENTS.md
+TODO.md
