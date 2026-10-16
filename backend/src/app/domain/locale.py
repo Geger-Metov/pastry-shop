@@ -1,6 +1,6 @@
 from typing import Final, Literal
 
-Locale = Literal["ru", "ky"]
+Locale = Literal["ru", "en", "fr"]
 
-SUPPORTED_LOCALES: Final[tuple[Locale, ...]] = ("ru", "ky")
+SUPPORTED_LOCALES: Final[tuple[Locale, ...]] = ("ru", "en", "fr")
 DEFAULT_LOCALE: Final[Locale] = "ru"
