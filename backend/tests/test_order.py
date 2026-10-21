@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import UTC, datetime
 from decimal import Decimal
 from uuid import uuid4
@@ -18,6 +19,7 @@ def make_order(status: OrderStatus, delivery_type: DeliveryType) -> Order:
         status=status,
         delivery_type=delivery_type,
         total_amount=Decimal("0"),
+        currency="KGS",
         desired_at=NOW,
         comment=None,
         created_at=NOW,
@@ -57,6 +59,12 @@ def test_money_has_no_float_error() -> None:
 def test_item_rejects_bad_quantity(quantity: int) -> None:
     with pytest.raises(ValueError):
         make_item(quantity, "100")
+
+
+@pytest.mark.parametrize("currency", ["", "kgs", "KG", "EURO"])
+def test_order_rejects_bad_currency(currency: str) -> None:
+    with pytest.raises(ValueError):
+        replace(make_order(OrderStatus.NEW, DeliveryType.PICKUP), currency=currency)
 
 
 def test_happy_path_pickup() -> None:

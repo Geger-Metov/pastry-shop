@@ -1,7 +1,7 @@
 [project]
 name = "app"
 version = "0.1.0"
-description = "Add your description here"
+description = "pastry shop backend"
 readme = "README.md"
 authors = [
     { name = "Geger-Metov", email = "205748080+Geger-Metov@users.noreply.github.com" }
@@ -11,15 +11,10 @@ dependencies = [
     "alembic>=1.20.0",
     "asyncpg>=0.32.0",
     "fastapi>=0.143.0",
+    "pydantic-settings>=2.16.0",
     "sqlalchemy[asyncio]>=2.1.4",
+    "uvicorn>=0.54.0",
 ]
-
-[project.scripts]
-app = "app:main"
-
-[build-system]
-requires = ["uv_build>=0.12.20,<0.13.0"]
-build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
@@ -28,6 +23,10 @@ dev = [
     "pytest-asyncio>=1.4.0",
     "ruff>=0.17.0",
 ]
+
+[build-system]
+requires = ["uv_build>=0.12.20,<0.13.0"]
+build-backend = "uv_build"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
