@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env.local", extra="ignore")
 
     database_url: str
-    cors_origin: list[str] = []
+    cors_origins: list[str] = []
 
     # Уведомления о заявках в Telegram. Если не заданы — заявка только сохраняется в БД
     telegram_bot_token: str | None = None
