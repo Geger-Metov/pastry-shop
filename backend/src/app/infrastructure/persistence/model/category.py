@@ -8,7 +8,7 @@ class CategoryModel(Base):
     __tablename__ = "category"
 
     __table_args__ = (
-        CheckConstraint("parent_id is null or parent_id <> id", name="not_own_parent"),
+        CheckConstraint("parent_id IS NULL OR parent_id <> id", name="not_own_parent"),
     )
 
     id: Mapped[BigIntPk]

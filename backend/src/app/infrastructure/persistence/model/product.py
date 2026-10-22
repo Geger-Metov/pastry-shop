@@ -1,9 +1,8 @@
-from decimal import Decimal
-
-from sqlalchemy import CheckConstraint, ForeignKey, Integer, Numeric, String, Text, UniqueConstraint
+from sqlalchemy import CheckConstraint, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.infrastructure.database.base import (
+    Amount,
     Base,
     BigInt,
     BigIntPk,
@@ -43,10 +42,11 @@ class ProductVariantModel(Base):
     __tablename__ = "product_variant"
 
     __table_args__ = (
-        CheckConstraint("weight_g > 0", name="weight_positive"),
+        CheckConstraint("weight_g > 0", name="weight_g_positive"),
+        CheckConstraint("pieces > 0", name="pieces_positive"),
+        CheckConstraint("price >= 0", name="price_non_negative"),
+        # NULLS NOT DISTINCT: два варианта (NULL, NULL) тоже считаются дублем
         UniqueConstraint("product_id", "weight_g", "pieces", postgresql_nulls_not_distinct=True),
-        CheckConstraint("price > 0", name="price_non_negative"),
-        CheckConstraint("pieces > 0", name="pieces_non_negative"),
     )
 
     id: Mapped[BigIntPk]
@@ -55,7 +55,7 @@ class ProductVariantModel(Base):
     )
     weight_g: Mapped[int | None] = mapped_column(Integer)
     pieces: Mapped[int | None] = mapped_column(Integer)
-    price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
+    price: Mapped[Amount]
     sort_order: Mapped[SortOrder]
     is_active: Mapped[IsActive]
 
