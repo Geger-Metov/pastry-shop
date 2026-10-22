@@ -3,7 +3,7 @@
 from enum import StrEnum
 
 import pytest
-from sqlalchemy import BigInteger, DateTime, Enum, Table
+from sqlalchemy import BigInteger, CheckConstraint, DateTime, Enum, Table
 
 import app.infrastructure.persistence.model  # noqa: F401  (регистрирует модели)
 from app.infrastructure.database.base import Base
@@ -53,3 +53,16 @@ def test_enum_columns_store_values_not_names(table: Table) -> None:
         assert column.type.enums == [member.value for member in enum_cls], (
             f"{table.name}.{column.name}"
         )
+
+
+@pytest.mark.parametrize("table", TABLES, ids=lambda t: t.name)
+def test_enum_columns_have_exactly_one_explicit_check(table: Table) -> None:
+    """Enum не должен создавать собственный CHECK: Alembic рендерит его дважды."""
+    check_names = [c.name for c in table.constraints if isinstance(c, CheckConstraint)]
+    assert len(check_names) == len(set(check_names)), f"duplicate CHECK names in {table.name}"
+    for column in table.columns:
+        if isinstance(column.type, Enum):
+            assert column.type.create_constraint is False, f"{table.name}.{column.name}"
+            # naming convention уже превратила имя "status" в "ck_<таблица>_status"
+            expected = f"ck_{table.name}_{column.name}"
+            assert check_names.count(expected) == 1, f"{table.name}.{column.name}"

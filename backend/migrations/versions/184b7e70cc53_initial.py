@@ -61,9 +61,7 @@ def upgrade() -> None:
         sa.Column("name", sa.String(length=100), nullable=False),
         sa.Column(
             "role",
-            sa.Enum(
-                "admin", "baker", name="role", native_enum=False, create_constraint=True, length=20
-            ),
+            sa.Enum("admin", "baker", name="role", native_enum=False, length=20),
             server_default="admin",
             nullable=False,
         ),
@@ -78,7 +76,6 @@ def upgrade() -> None:
         sa.CheckConstraint(
             "email ~ '^[^@\\s]+@[^@\\s]+$'", name=op.f("ck_staff_user_email_format")
         ),
-        sa.CheckConstraint("role IN ('admin', 'baker')", name="role"),
         sa.CheckConstraint("role IN ('admin', 'baker')", name=op.f("ck_staff_user_role")),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_staff_user")),
     )
@@ -117,7 +114,6 @@ def upgrade() -> None:
                 "email",
                 name="preferred_contact",
                 native_enum=False,
-                create_constraint=True,
                 length=20,
             ),
             nullable=True,
@@ -141,10 +137,6 @@ def upgrade() -> None:
         sa.CheckConstraint("email ~ '^[^@\\s]+@[^@\\s]+$'", name=op.f("ck_customer_email_format")),
         sa.CheckConstraint(
             "phone ~ '^\\+[1-9][0-9]{7,14}$'", name=op.f("ck_customer_phone_format")
-        ),
-        sa.CheckConstraint(
-            "preferred_contact IN ('phone', 'telegram', 'whatsapp', 'email')",
-            name="preferred_contact",
         ),
         sa.CheckConstraint(
             "preferred_contact IN ('phone', 'telegram', 'whatsapp', 'email')",
@@ -231,7 +223,6 @@ def upgrade() -> None:
                 "cancelled",
                 name="status",
                 native_enum=False,
-                create_constraint=True,
                 length=20,
             ),
             server_default="new",
@@ -244,7 +235,6 @@ def upgrade() -> None:
                 "delivery",
                 name="delivery_type",
                 native_enum=False,
-                create_constraint=True,
                 length=20,
             ),
             nullable=False,
@@ -266,13 +256,8 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.CheckConstraint("currency ~ '^[A-Z]{3}$'", name=op.f("ck_orders_currency_format")),
-        sa.CheckConstraint("delivery_type IN ('pickup', 'delivery')", name="delivery_type"),
         sa.CheckConstraint(
             "delivery_type IN ('pickup', 'delivery')", name=op.f("ck_orders_delivery_type")
-        ),
-        sa.CheckConstraint(
-            "status IN ('new', 'confirmed', 'in_production', 'ready', 'out_for_delivery', 'completed', 'cancelled')",
-            name="status",
         ),
         sa.CheckConstraint(
             "status IN ('new', 'confirmed', 'in_production', 'ready', 'out_for_delivery', 'completed', 'cancelled')",
@@ -430,7 +415,6 @@ def upgrade() -> None:
                 "rejected",
                 name="status",
                 native_enum=False,
-                create_constraint=True,
                 length=20,
             ),
             server_default="new",
@@ -461,9 +445,6 @@ def upgrade() -> None:
         ),
         sa.CheckConstraint("email ~ '^[^@\\s]+@[^@\\s]+$'", name=op.f("ck_lead_email_format")),
         sa.CheckConstraint("phone ~ '^\\+[1-9][0-9]{7,14}$'", name=op.f("ck_lead_phone_format")),
-        sa.CheckConstraint(
-            "status IN ('new', 'in_progress', 'converted', 'rejected')", name="status"
-        ),
         sa.CheckConstraint(
             "status IN ('new', 'in_progress', 'converted', 'rejected')", name=op.f("ck_lead_status")
         ),
@@ -537,7 +518,6 @@ def upgrade() -> None:
                 "cancelled",
                 name="status",
                 native_enum=False,
-                create_constraint=True,
                 length=20,
             ),
             nullable=False,
@@ -549,10 +529,6 @@ def upgrade() -> None:
             sa.DateTime(timezone=True),
             server_default=sa.text("now()"),
             nullable=False,
-        ),
-        sa.CheckConstraint(
-            "status IN ('new', 'confirmed', 'in_production', 'ready', 'out_for_delivery', 'completed', 'cancelled')",
-            name="status",
         ),
         sa.CheckConstraint(
             "status IN ('new', 'confirmed', 'in_production', 'ready', 'out_for_delivery', 'completed', 'cancelled')",
@@ -592,7 +568,6 @@ def upgrade() -> None:
                 "qr",
                 name="method",
                 native_enum=False,
-                create_constraint=True,
                 length=20,
             ),
             nullable=False,
@@ -606,7 +581,6 @@ def upgrade() -> None:
                 "refunded",
                 name="status",
                 native_enum=False,
-                create_constraint=True,
                 length=20,
             ),
             server_default="pending",
@@ -620,14 +594,12 @@ def upgrade() -> None:
             server_default=sa.text("now()"),
             nullable=False,
         ),
-        sa.CheckConstraint("method IN ('cash', 'card', 'transfer', 'qr')", name="method"),
         sa.CheckConstraint(
             "method IN ('cash', 'card', 'transfer', 'qr')", name=op.f("ck_payment_method")
         ),
         sa.CheckConstraint(
             "status <> 'paid' OR paid_at IS NOT NULL", name=op.f("ck_payment_paid_has_date")
         ),
-        sa.CheckConstraint("status IN ('pending', 'paid', 'failed', 'refunded')", name="status"),
         sa.CheckConstraint(
             "status IN ('pending', 'paid', 'failed', 'refunded')", name=op.f("ck_payment_status")
         ),
@@ -715,6 +687,10 @@ def upgrade() -> None:
         op.f("ix_lead_attachment_lead_id"), "lead_attachment", ["lead_id"], unique=False
     )
     # ### end Alembic commands ###
+
+    # --- seed data: locales supported by the site ---
+    locale = sa.table("locale", sa.column("code", sa.String))
+    op.bulk_insert(locale, [{"code": "ru"}, {"code": "en"}, {"code": "fr"}])
 
 
 def downgrade() -> None:

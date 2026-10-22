@@ -23,13 +23,15 @@ from app.infrastructure.database.base import (
     CreatedAt,
     UpdatedAt,
 )
-from app.infrastructure.database.types import str_enum
+from app.infrastructure.database.types import enum_check, str_enum
 
 
 class OrderModel(Base):
     __tablename__ = "orders"
 
     __table_args__ = (
+        enum_check("status", OrderStatus),
+        enum_check("delivery_type", DeliveryType),
         CheckConstraint("total_amount >= 0", name="total_amount_non_negative"),
         CheckConstraint("currency ~ '^[A-Z]{3}$'", name="currency_format"),
         # доска кондитера: заказы по статусу и сроку
@@ -43,9 +45,9 @@ class OrderModel(Base):
         ForeignKey("customer.id", ondelete="RESTRICT"), index=True
     )
     status: Mapped[OrderStatus] = mapped_column(
-        str_enum(OrderStatus, "status"), server_default=OrderStatus.NEW.value
+        str_enum(OrderStatus), server_default=OrderStatus.NEW.value
     )
-    delivery_type: Mapped[DeliveryType] = mapped_column(str_enum(DeliveryType, "delivery_type"))
+    delivery_type: Mapped[DeliveryType] = mapped_column(str_enum(DeliveryType))
     # снимок итога: сумма позиций + доставка (см. Order.calculate_total)
     total_amount: Mapped[Amount]
     currency: Mapped[str] = mapped_column(CHAR(3))  # ISO 4217, из настроек магазина
@@ -81,12 +83,13 @@ class OrderStatusHistoryModel(Base):
     __tablename__ = "order_status_history"
 
     __table_args__ = (
+        enum_check("status", OrderStatus),
         Index("ix_order_status_history_order_id_changed_at", "order_id", "changed_at"),
     )
 
     id: Mapped[BigIntPk]
     order_id: Mapped[BigInt] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"))
-    status: Mapped[OrderStatus] = mapped_column(str_enum(OrderStatus, "status"))
+    status: Mapped[OrderStatus] = mapped_column(str_enum(OrderStatus))
     # None - система или клиент
     changed_by: Mapped[BigInt | None] = mapped_column(
         ForeignKey("staff_user.id", ondelete="SET NULL")

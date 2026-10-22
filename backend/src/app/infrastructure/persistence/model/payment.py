@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from app.domain.payment import PaymentMethod, PaymentStatus
 from app.infrastructure.database.base import Amount, Base, BigInt, BigIntPk, CreatedAt
-from app.infrastructure.database.types import str_enum
+from app.infrastructure.database.types import enum_check, str_enum
 
 
 class PaymentModel(Base):
@@ -14,6 +14,8 @@ class PaymentModel(Base):
     __tablename__ = "payment"
 
     __table_args__ = (
+        enum_check("method", PaymentMethod),
+        enum_check("status", PaymentStatus),
         CheckConstraint("amount > 0", name="amount_positive"),
         CheckConstraint("status <> 'paid' OR paid_at IS NOT NULL", name="paid_has_date"),
         # защита от двойной обработки одного и того же вебхука
@@ -31,9 +33,9 @@ class PaymentModel(Base):
         ForeignKey("orders.id", ondelete="RESTRICT"), index=True
     )
     amount: Mapped[Amount]
-    method: Mapped[PaymentMethod] = mapped_column(str_enum(PaymentMethod, "method"))
+    method: Mapped[PaymentMethod] = mapped_column(str_enum(PaymentMethod))
     status: Mapped[PaymentStatus] = mapped_column(
-        str_enum(PaymentStatus, "status"), server_default=PaymentStatus.PENDING.value
+        str_enum(PaymentStatus), server_default=PaymentStatus.PENDING.value
     )
     external_id: Mapped[str | None] = mapped_column(String(100))  # id у платёжного провайдера
     paid_at: Mapped[datetime | None]

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from app.domain.lead import LeadStatus
 from app.infrastructure.database.base import Amount, Base, BigInt, BigIntPk, CreatedAt, UpdatedAt
-from app.infrastructure.database.types import email_check, phone_check, str_enum
+from app.infrastructure.database.types import email_check, enum_check, phone_check, str_enum
 
 
 class LeadModel(Base):
@@ -14,6 +14,7 @@ class LeadModel(Base):
     __tablename__ = "lead"
 
     __table_args__ = (
+        enum_check("status", LeadStatus),
         phone_check(),
         email_check(),
         CheckConstraint("servings > 0", name="servings_positive"),
@@ -23,7 +24,7 @@ class LeadModel(Base):
 
     id: Mapped[BigIntPk]
     status: Mapped[LeadStatus] = mapped_column(
-        str_enum(LeadStatus, "status"), server_default=LeadStatus.NEW.value
+        str_enum(LeadStatus), server_default=LeadStatus.NEW.value
     )
     customer_id: Mapped[BigInt | None] = mapped_column(
         ForeignKey("customer.id", ondelete="SET NULL"), index=True

@@ -34,4 +34,6 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    return Settings()
+    # database_url and shop_currency are loaded from the environment / .env.local
+    # at runtime; mypy only sees them as required __init__ arguments.
+    return Settings()  # type: ignore[call-arg]

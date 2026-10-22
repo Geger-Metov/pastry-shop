@@ -7,11 +7,27 @@ repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.16.10
     hooks:
+      # Миграции Alembic генерируются автоматически: не переформатируем и не правим их.
       - id: ruff-check
         args: [--fix]
         files: ^backend/
+        exclude: ^backend/migrations/versions/
       - id: ruff-format
         files: ^backend/
+        exclude: ^backend/migrations/versions/
+
+  # mypy запускается через uv в окружении backend: ему нужны установленные sqlalchemy,
+  # pydantic и т. д. (изолированное окружение pre-commit их не видит).
+  # Проверяется весь пакет сразу (pass_filenames: false), поэтому хук срабатывает
+  # на любое изменение .py в backend/src и backend/tests. Миграции не проверяем.
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy (backend)
+        language: system
+        entry: bash -c 'cd backend && uv run mypy src tests'
+        pass_filenames: false
+        files: ^backend/(src|tests)/.*\.py$
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0

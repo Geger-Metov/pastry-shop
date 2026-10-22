@@ -6,13 +6,14 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.domain.customer import ContactMethod
 from app.domain.locale import DEFAULT_LOCALE
 from app.infrastructure.database.base import Base, BigIntPk, CreatedAt, IsActive, UpdatedAt
-from app.infrastructure.database.types import email_check, phone_check, str_enum
+from app.infrastructure.database.types import email_check, enum_check, phone_check, str_enum
 
 
 class CustomerModel(Base):
     __tablename__ = "customer"
 
     __table_args__ = (
+        enum_check("preferred_contact", ContactMethod),
         phone_check(),
         email_check(),
         # уникальный email без учёта регистра; NULL-ы друг другу не мешают
@@ -23,9 +24,7 @@ class CustomerModel(Base):
     name: Mapped[str] = mapped_column(String(100))
     phone: Mapped[str] = mapped_column(String(16), unique=True)
     email: Mapped[str | None] = mapped_column(String(255))
-    preferred_contact: Mapped[ContactMethod | None] = mapped_column(
-        str_enum(ContactMethod, "preferred_contact")
-    )
+    preferred_contact: Mapped[ContactMethod | None] = mapped_column(str_enum(ContactMethod))
     locale: Mapped[str] = mapped_column(
         String(5), ForeignKey("locale.code"), server_default=DEFAULT_LOCALE
     )
