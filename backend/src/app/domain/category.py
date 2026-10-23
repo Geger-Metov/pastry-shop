@@ -18,3 +18,17 @@ class CategoryTranslation:
     locale: Locale
     name: str
     description: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class LocalizedCategory:
+    """Категория с названием на одном языке: read model для API витрины.
+
+    `locale` - язык, на котором РЕАЛЬНО вернулись name и description. Он может отличаться
+    от запрошенного: если перевода на нужный язык нет, берётся язык по умолчанию.
+    """
+
+    category: Category
+    locale: Locale
+    name: str
+    description: str | None
