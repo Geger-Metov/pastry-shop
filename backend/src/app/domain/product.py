@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from app.domain.allergen import Allergen
 from app.domain.locale import Locale
 from app.domain.money import Money
 
@@ -51,3 +52,20 @@ class ProductImage:
     product_id: int
     path: str
     sort_order: int
+
+
+@dataclass(frozen=True, slots=True)
+class LocalizedProduct:
+    """Товар для витрины: название на одном языке + варианты, картинки и аллергены.
+
+    `locale` - язык, на котором РЕАЛЬНО вернулись name и description (может быть языком по
+    умолчанию, если перевода на запрошенный нет). Коллекции - tuple, потому что dataclass frozen.
+    """
+
+    product: Product
+    locale: Locale
+    name: str
+    description: str | None
+    variants: tuple[ProductVariant, ...]
+    images: tuple[ProductImage, ...]
+    allergens: tuple[Allergen, ...]

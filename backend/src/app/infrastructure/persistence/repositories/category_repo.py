@@ -6,8 +6,6 @@ from app.domain.category import Category, LocalizedCategory
 from app.domain.locale import DEFAULT_LOCALE, Locale, parse_locale
 from app.infrastructure.persistence.model.category import CategoryModel, CategoryTranslationModel
 
-# type _Row = tuple[CategoryModel, CategoryTranslationModel, CategoryTranslationModel]
-
 
 def _to_category(model: CategoryModel) -> Category:
     return Category(
@@ -75,10 +73,15 @@ class SqlCategoryRepository:
 
     async def list_active(self, locale: Locale) -> list[LocalizedCategory]:
         stmt = _active_localized_select(locale).order_by(CategoryModel.sort_order, CategoryModel.id)
-        rows = (await self._session.execute(stmt)).all()
-        return [_to_localized(*row) for row in rows]
+        result = await self._session.execute(stmt)
+        return [
+            _to_localized(category, requested, fallback) for category, requested, fallback in result
+        ]
 
     async def get_active_by_slug(self, slug: str, locale: Locale) -> LocalizedCategory | None:
         stmt = _active_localized_select(locale).where(CategoryModel.slug == slug)
         row = (await self._session.execute(stmt)).first()
-        return _to_localized(*row) if row is not None else None
+        if row is None:
+            return None
+        category, requested, fallback = row
+        return _to_localized(category, requested, fallback)

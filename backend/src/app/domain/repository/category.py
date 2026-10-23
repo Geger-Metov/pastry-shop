@@ -5,7 +5,7 @@ from app.domain.locale import Locale
 
 
 class CategoryRepository(Protocol):
-    """Контракт доступа к категориям. Реализация - в infrastructure/persistence/repository."""
+    """Контракт доступа к категориям. Реализация - в infrastructure/persistence/repositories."""
 
     async def list_active(self, locale: Locale) -> list[LocalizedCategory]:
         """Активные категории по sort_order. Без перевода (даже на язык по умолчанию) - пропуск."""
