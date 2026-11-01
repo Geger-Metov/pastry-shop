@@ -26,3 +26,22 @@ TEST_DATABASE_URL=postgresql+asyncpg://USER:PASSWORD@localhost:5432/pastry_test 
 The schema is created from the ORM metadata. Every test runs inside a transaction
 that is rolled back, so tests do not affect each other. Without `TEST_DATABASE_URL`
 the integration tests are skipped.
+
+## Run the API
+
+```bash
+uv run uvicorn app.main:create_app --factory --reload
+```
+
+`create_app()` is a factory, so there is no module-level `app` and importing the module
+does not need a `.env.local`. Interactive docs: http://localhost:8000/docs
+
+| Endpoint | Description |
+| --- | --- |
+| `GET /categories?locale=ru` | Active categories |
+| `GET /products?locale=ru&category=cakes` | Visible products with variants, images and allergens |
+| `GET /products/{slug}?locale=ru` | One product, 404 if it does not exist or is hidden |
+
+`locale` is `ru`, `en` or `fr`. A missing or unsupported value means `ru`. Each item has a
+`locale` field with the language its text is actually in (a translation may be missing).
+Prices are strings (`"1300.50"`) so no precision is lost.

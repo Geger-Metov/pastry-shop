@@ -13,7 +13,7 @@ class Settings(BaseSettings):
 
     # Валюта магазина (ISO 4217) и код страны для национальных номеров телефона.
     # Никуда не вшиты: смена языка интерфейса на них не влияет.
-    shop_currency: str
+    shop_currency: str | None = None
     phone_default_country_code: str | None = None
     cors_origins: list[str] = []
 
