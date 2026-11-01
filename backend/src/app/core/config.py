@@ -3,17 +3,22 @@ from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class Settings(BaseSettings):
-    """Настройки приложения. Значения берутся из переменных окружения."""
+class DatabaseSettings(BaseSettings):
+    """Только подключение к БД. Нужны Alembic и контейнеру migrate: им магазин не важен."""
 
-    model_config = SettingsConfigDict(env_file=".env.local", extra="ignore")
+    # env_ignore_empty: пустая переменная (FOO=) считается незаданной, а не пустой строкой
+    model_config = SettingsConfigDict(env_file=".env.local", env_ignore_empty=True, extra="ignore")
 
     # postgresql+asyncpg://user:password@localhost:5432/dbname
     database_url: str
 
+
+class Settings(DatabaseSettings):
+    """Настройки приложения. Значения берутся из переменных окружения."""
+
     # Валюта магазина (ISO 4217) и код страны для национальных номеров телефона.
     # Никуда не вшиты: смена языка интерфейса на них не влияет.
-    shop_currency: str | None = None
+    shop_currency: str
     phone_default_country_code: str | None = None
     cors_origins: list[str] = []
 
@@ -30,6 +35,11 @@ class Settings(BaseSettings):
     mail_from: str | None = None
     # Несколько получателей через запятую
     mail_to: str | None = None
+
+
+@lru_cache
+def get_database_settings() -> DatabaseSettings:
+    return DatabaseSettings()  # type: ignore[call-arg]
 
 
 @lru_cache

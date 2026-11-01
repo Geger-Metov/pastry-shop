@@ -6,7 +6,7 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from app.core.config import get_settings
+from app.core.config import get_database_settings
 from app.infrastructure.database.base import Base
 from app.infrastructure.persistence import model  # noqa: F401  (регистрирует модели)
 
@@ -19,8 +19,9 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# URL берём из настроек приложения (DATABASE_URL), а не из alembic.ini
-config.set_main_option("sqlalchemy.url", get_settings().database_url)
+# URL берём из DATABASE_URL, а не из alembic.ini. Остальные настройки (валюта и т. д.)
+# миграциям не нужны, поэтому читаем только DatabaseSettings.
+config.set_main_option("sqlalchemy.url", get_database_settings().database_url)
 
 # metadata для autogenerate; импорт пакета model регистрирует в ней все таблицы
 target_metadata = Base.metadata
