@@ -10,7 +10,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "gen:api": "openapi-typescript http://localhost:8000/openapi.json -o src/lib/api/schema.d.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -19,6 +20,7 @@
     "lucide-react": "^1.66.0",
     "next": "16.4.3",
     "next-intl": "^4.14.9",
+    "openapi-fetch": "^0.17.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "shadcn": "^4.23.0",
@@ -31,10 +33,11 @@
     "@types/react-dom": "^19.3.0",
     "eslint": "^10.14.0",
     "eslint-config-next": "16.4.3",
+    "openapi-typescript": "^7.13.0",
     "prettier": "3.9.10",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.3.3",
-    "typescript": "^7.0.2"
+    "typescript": "^5.9.3"
   },
   "packageManager": "pnpm@12.16.1+sha512.091d1dee7927575661b25dab3c2ae31cafc1c54d6b71ed6a6600cf0c1cb10434a447eae14015f1b23e2e6bedeed79df94a932e2164d2832280dce3fb32f656d1"
 }
