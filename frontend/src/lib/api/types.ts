@@ -1,4 +1,4 @@
-import { components } from "./schema";
+import type { components } from "./schema";
 
 export type Category = components["schemas"]["CategoryOut"];
 export type Product = components["schemas"]["ProductOut"];
