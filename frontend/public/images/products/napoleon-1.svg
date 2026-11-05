@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Napoleon">
+  <rect width="800" height="600" fill="#f6e3b4"/>
+  <circle cx="400" cy="270" r="130" fill="#c98b2b" opacity="0.85"/>
+  <circle cx="400" cy="270" r="80" fill="#f6e3b4" opacity="0.6"/>
+  <text x="400" y="500" text-anchor="middle" font-family="sans-serif" font-size="44" fill="#c98b2b">Napoleon</text>
+</svg>

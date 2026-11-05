@@ -1,6 +1,3 @@
-# Проверки перед коммитом. Установка (один раз в каждом клоне):
-#   uv tool install pre-commit && pre-commit install
-# Проверить всё сразу: pre-commit run --all-files
 repos:
   # Ruff для бэкенда. Настройки берутся из backend/pyproject.toml.
   # Версию держите близкой к версии ruff в backend/uv.lock (или: pre-commit autoupdate)

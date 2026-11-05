@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Cheesecake">
+  <rect width="800" height="600" fill="#fbeadf"/>
+  <circle cx="400" cy="270" r="130" fill="#d4876a" opacity="0.85"/>
+  <circle cx="400" cy="270" r="80" fill="#fbeadf" opacity="0.6"/>
+  <text x="400" y="500" text-anchor="middle" font-family="sans-serif" font-size="44" fill="#d4876a">Cheesecake</text>
+</svg>

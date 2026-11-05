@@ -17,6 +17,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-const withNrxtIntl = createNextIntlPlugin();
+const withNextIntl = createNextIntlPlugin();
 
-export default withNrxtIntl(nextConfig);
+export default withNextIntl(nextConfig);

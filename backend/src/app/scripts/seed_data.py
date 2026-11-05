@@ -79,7 +79,7 @@ PRODUCTS: tuple[ProductSeed, ...] = (
             VariantSeed(Decimal("1300.00"), weight_g=1000),
             VariantSeed(Decimal("2500.00"), weight_g=2000),
         ),
-        images=("/images/products/napoleon-1.jpg", "/images/products/napoleon-2.jpg"),
+        images=("/images/products/napoleon-1.svg", "/images/products/napoleon-2.svg"),
         allergens=("gluten", "milk", "eggs"),
     ),
     ProductSeed(
@@ -95,7 +95,7 @@ PRODUCTS: tuple[ProductSeed, ...] = (
             VariantSeed(Decimal("1200.00"), weight_g=1000),
             VariantSeed(Decimal("2300.00"), weight_g=2000),
         ),
-        images=("/images/products/medovik-1.jpg",),
+        images=("/images/products/medovik-1.svg",),
         allergens=("gluten", "milk", "eggs", "nuts"),
     ),
     ProductSeed(
@@ -108,7 +108,7 @@ PRODUCTS: tuple[ProductSeed, ...] = (
             "fr": ("Cheesecake", "Gâteau au fromage sur fond sablé"),
         },
         variants=(VariantSeed(Decimal("1500.00"), weight_g=1200),),
-        images=("/images/products/cheesecake-1.jpg",),
+        images=("/images/products/cheesecake-1.svg",),
         allergens=("gluten", "milk", "eggs"),
     ),
     ProductSeed(
@@ -125,7 +125,7 @@ PRODUCTS: tuple[ProductSeed, ...] = (
             VariantSeed(Decimal("1100.00"), pieces=12),
             VariantSeed(Decimal("2000.00"), pieces=24),
         ),
-        images=("/images/products/macarons-1.jpg",),
+        images=("/images/products/macarons-1.svg",),
         allergens=("nuts", "eggs"),
     ),
     ProductSeed(
@@ -141,7 +141,7 @@ PRODUCTS: tuple[ProductSeed, ...] = (
             VariantSeed(Decimal("180.00"), pieces=1),
             VariantSeed(Decimal("950.00"), pieces=6),
         ),
-        images=("/images/products/eclair-1.jpg",),
+        images=("/images/products/eclair-1.svg",),
         allergens=("gluten", "milk", "eggs"),
     ),
     ProductSeed(

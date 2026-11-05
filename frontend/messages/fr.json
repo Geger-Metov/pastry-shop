@@ -1,5 +1,47 @@
 {
+  "meta": {
+    "title": "Pâtisserie",
+    "description": "Gâteaux, macarons et pâtisseries artisanaux"
+  },
   "nav": {
+    "home": "Accueil",
     "catalog": "Catalogue"
+  },
+  "language": {
+    "label": "Langue"
+  },
+  "home": {
+    "title": "Desserts artisanaux",
+    "subtitle": "Gâteaux, macarons et pâtisseries aux ingrédients naturels",
+    "browse": "Voir le catalogue",
+    "categories": "Catégories"
+  },
+  "catalog": {
+    "title": "Catalogue",
+    "all": "Tous les produits",
+    "empty": "Rien ici pour le moment"
+  },
+  "product": {
+    "from": "à partir de {price}",
+    "options": "Formats",
+    "allergens": "Allergènes",
+    "back": "Retour au catalogue",
+    "noImage": "Pas de photo"
+  },
+  "variant": {
+    "weight": "{value} g",
+    "pieces": "{count, plural, one {# pièce} other {# pièces}}"
+  },
+  "allergens": {
+    "gluten": "Gluten",
+    "milk": "Lait",
+    "eggs": "Œufs",
+    "nuts": "Fruits à coque"
+  },
+  "fallbackNotice": "Il n'y a pas encore de traduction dans votre langue, le russe est affiché.",
+  "notFound": {
+    "title": "Page introuvable",
+    "text": "Cette page n'existe pas ou le produit n'est plus disponible.",
+    "home": "Retour à l'accueil"
   }
 }

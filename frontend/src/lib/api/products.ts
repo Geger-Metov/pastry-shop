@@ -1,11 +1,13 @@
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 
 import type { Locale } from "@/i18n/routing";
 
-import { api } from "./client";
+import { getApi } from "./client";
 
 export async function getProducts(locale: Locale, category?: string) {
-  const { data, error } = await api.GET("/products", {
+  await connection();
+  const { data, error } = await getApi().GET("/products", {
     params: { query: { locale, category } },
   });
   if (error) {
@@ -16,10 +18,11 @@ export async function getProducts(locale: Locale, category?: string) {
 }
 
 export async function getProductBySlug(locale: Locale, slug: string) {
-  const { data, error, response } = await api.GET("/products/{slug}", {
+  await connection();
+  const { data, error, response } = await getApi().GET("/products/{slug}", {
     params: { path: { slug }, query: { locale } },
   });
-  if (response.status == 404) notFound();
+  if (response.status === 404) notFound();
 
   if (error) {
     // console.error("Failed to load product:", error);

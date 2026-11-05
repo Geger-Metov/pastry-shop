@@ -1,5 +1,47 @@
 {
+  "meta": {
+    "title": "Pastry shop",
+    "description": "Handmade cakes, macarons and pastries"
+  },
   "nav": {
+    "home": "Home",
     "catalog": "Catalog"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "home": {
+    "title": "Handmade desserts",
+    "subtitle": "Cakes, macarons and pastries made from natural ingredients",
+    "browse": "Browse the catalog",
+    "categories": "Categories"
+  },
+  "catalog": {
+    "title": "Catalog",
+    "all": "All products",
+    "empty": "Nothing here yet"
+  },
+  "product": {
+    "from": "from {price}",
+    "options": "Options",
+    "allergens": "Allergens",
+    "back": "Back to the catalog",
+    "noImage": "No photo"
+  },
+  "variant": {
+    "weight": "{value} g",
+    "pieces": "{count, plural, one {# piece} other {# pieces}}"
+  },
+  "allergens": {
+    "gluten": "Gluten",
+    "milk": "Milk",
+    "eggs": "Eggs",
+    "nuts": "Nuts"
+  },
+  "fallbackNotice": "There is no translation in your language yet, so Russian is shown.",
+  "notFound": {
+    "title": "Page not found",
+    "text": "This page does not exist, or the product is no longer available.",
+    "home": "Go to the home page"
   }
 }

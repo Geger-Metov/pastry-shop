@@ -1,8 +1,11 @@
-import { api } from "./client";
+import { connection } from "next/server";
+
+import { getApi } from "./client";
 import type { Locale } from "@/i18n/routing";
 
 export async function getCategories(locale: Locale) {
-  const { data, error } = await api.GET("/categories", {
+  await connection(); // данные берём при запросе, а не при сборке
+  const { data, error } = await getApi().GET("/categories", {
     params: { query: { locale } },
   });
   if (error) {

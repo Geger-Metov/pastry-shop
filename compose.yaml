@@ -50,5 +50,17 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
 
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    environment:
+      API_URL: http://backend:8000
+      SHOP_CURRENCY: ${SHOP_CURRENCY:?задайте SHOP_CURRENCY в .env}
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:3000:3000"
+
 volumes:
   postgres_data:
