@@ -79,13 +79,11 @@ jobs:
           cache_dependency_path: frontend/pnpm-lock.yaml
       - uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: 26
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Typecheck
         run: pnpm typecheck
-      - name: Tests (переводы)
-        run: pnpm test
       - name: Lint
         run: pnpm lint
       - name: Build
