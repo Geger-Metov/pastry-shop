@@ -2,7 +2,7 @@ repos:
   # Ruff для бэкенда. Настройки берутся из backend/pyproject.toml.
   # Версию держите близкой к версии ruff в backend/uv.lock (или: pre-commit autoupdate)
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.10
+    rev: v0.17.0
     hooks:
       # Миграции Alembic генерируются автоматически: не переформатируем и не правим их.
       - id: ruff-check

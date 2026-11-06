@@ -10,10 +10,7 @@ export async function getProducts(locale: Locale, category?: string) {
   const { data, error } = await getApi().GET("/products", {
     params: { query: { locale, category } },
   });
-  if (error) {
-    // console.error("Failed to load products:", error);
-    throw new Error("Failed to load products");
-  }
+  if (error) throw new Error("Failed to load products", { cause: error });
   return data;
 }
 
@@ -24,9 +21,6 @@ export async function getProductBySlug(locale: Locale, slug: string) {
   });
   if (response.status === 404) notFound();
 
-  if (error) {
-    // console.error("Failed to load product:", error);
-    throw new Error("Failed to load product");
-  }
+  if (error) throw new Error("Failed to load product", { cause: error });
   return data;
 }

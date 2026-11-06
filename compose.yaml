@@ -47,6 +47,17 @@ services:
     depends_on:
       migrate:
         condition: service_completed_successfully
+    healthcheck:
+      # в slim-образе нет curl, поэтому проверяем средствами Python
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     ports:
       - "127.0.0.1:8000:8000"
 
@@ -58,7 +69,8 @@ services:
       API_URL: http://backend:8000
       SHOP_CURRENCY: ${SHOP_CURRENCY:?задайте SHOP_CURRENCY в .env}
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     ports:
       - "127.0.0.1:3000:3000"
 

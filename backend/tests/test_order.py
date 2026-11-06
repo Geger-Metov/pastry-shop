@@ -1,6 +1,7 @@
 from dataclasses import replace
 from datetime import UTC, datetime
 from decimal import Decimal
+from itertools import pairwise
 from uuid import uuid4
 
 import pytest
@@ -75,7 +76,7 @@ def test_happy_path_pickup() -> None:
         OrderStatus.READY,
         OrderStatus.COMPLETED,
     ]
-    for current, nxt in zip(chain, chain[1:], strict=False):
+    for current, nxt in pairwise(chain):
         assert make_order(current, DeliveryType.PICKUP).can_transition_to(nxt)
 
 

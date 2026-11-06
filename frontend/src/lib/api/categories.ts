@@ -8,9 +8,6 @@ export async function getCategories(locale: Locale) {
   const { data, error } = await getApi().GET("/categories", {
     params: { query: { locale } },
   });
-  if (error) {
-    // console.error("Failed to load categories:", error);
-    throw new Error("Failed to load categories");
-  }
+  if (error) throw new Error("Failed to load categories", { cause: error });
   return data;
 }

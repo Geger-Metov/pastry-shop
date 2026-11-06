@@ -15,6 +15,21 @@ def test_normalize_other_country() -> None:
     assert normalize_phone("06 12 34 56 78", default_country_code="33") == "+33612345678"
 
 
+@pytest.mark.parametrize("raw", ["89161234567", "8 (916) 123-45-67", "9161234567", "79161234567"])
+def test_normalize_russian_trunk_prefix(raw: str) -> None:
+    # в России и Казахстане (код 7) внутри страны перед номером набирают 8, а не 0
+    assert normalize_phone(raw, default_country_code="7") == "+79161234567"
+
+
+def test_kazakh_national_number_starting_with_country_digit() -> None:
+    # национальный номер сам начинается с 7: код страны добавляем, а не считаем его уже набранным
+    assert normalize_phone("7771234567", default_country_code="7") == "+77771234567"
+
+
+def test_double_zero_is_international_prefix() -> None:
+    assert normalize_phone("00 996 555 123 456", default_country_code="7") == "+996555123456"
+
+
 def test_international_format_ignores_default() -> None:
     assert normalize_phone("+7 (701) 123-45-67", default_country_code="996") == "+77011234567"
 

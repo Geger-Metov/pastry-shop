@@ -49,7 +49,8 @@ def test_enum_columns_store_values_not_names(table: Table) -> None:
         if not isinstance(column.type, Enum):
             continue
         enum_cls = column.type.enum_class
-        assert enum_cls is not None and issubclass(enum_cls, StrEnum)
+        assert enum_cls is not None
+        assert issubclass(enum_cls, StrEnum)
         assert column.type.enums == [member.value for member in enum_cls], (
             f"{table.name}.{column.name}"
         )

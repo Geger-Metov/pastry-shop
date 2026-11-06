@@ -161,6 +161,18 @@ async def test_get_hidden_product_is_404(client: httpx.AsyncClient, session: Asy
     assert (await client.get("/products/hidden")).status_code == 404
 
 
+async def test_health_checks_database(client: httpx.AsyncClient) -> None:
+    response = await client.get("/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
+async def test_health_is_not_in_openapi(client: httpx.AsyncClient) -> None:
+    # служебный эндпоинт: без него сгенерированные типы фронтенда не меняются
+    assert "/health" not in (await client.get("/openapi.json")).json()["paths"]
+
+
 async def test_openapi_schema_is_generated(client: httpx.AsyncClient) -> None:
     response = await client.get("/openapi.json")
 

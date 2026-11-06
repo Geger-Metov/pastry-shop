@@ -39,8 +39,8 @@ class Base(DeclarativeBase):
     metadata = MetaData(naming_convention=NAMING_CONVENTION)
 
     # любой Mapped[datetime] - это timestamptz (в схеме везде timestamptz)
-    type_annotation_map = {datetime: DateTime(timezone=True)}
+    type_annotation_map = {datetime: DateTime(timezone=True)}  # noqa: RUF012
 
     # после INSERT/UPDATE значения, которые выставила БД (created_at, updated_at),
     # возвращаются через RETURNING, а не лениво - иначе в async будет MissingGreenlet
-    __mapper_args__ = {"eager_defaults": True}
+    __mapper_args__ = {"eager_defaults": True}  # noqa: RUF012

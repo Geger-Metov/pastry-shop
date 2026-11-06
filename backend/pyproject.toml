@@ -43,7 +43,10 @@ line-length = 100
 src = ["src", "tests"]
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "UP", "B"]
+select = ["E", "F", "I", "UP", "B", "SIM", "ASYNC", "RUF", "PT", "C4", "DTZ", "PERF", "TC"]
+# RUF001-003: в комментариях и строках осознанно кириллица
+# PT011: pytest.raises(ValueError) без match - привычка проекта, tests/ проверяют типы ошибок
+ignore = ["RUF001", "RUF002", "RUF003", "PT011"]
 
 # Чтобы автоматически созданные миграции больше не вызывали ошибки
 [tool.ruff.lint.per-file-ignores]

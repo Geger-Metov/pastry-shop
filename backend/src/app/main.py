@@ -6,13 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.router import api_router
 from app.core.config import Settings, get_settings
-from app.infrastructure.database.session import get_engine
-
-
-@asynccontextmanager
-async def lifespan(_: FastAPI) -> AsyncGenerator[None]:
-    yield
-    await get_engine().dispose()
+from app.infrastructure.database.session import create_engine, create_sessionmaker
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -21,6 +15,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     Настройки можно передать явно (тесты), иначе читаются из окружения.
     """
     settings = settings or get_settings()
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
+        # engine принадлежит приложению и строится из ЕГО настроек, а не из глобальных
+        engine = create_engine(settings.database_url)
+        app.state.sessionmaker = create_sessionmaker(engine)
+        yield
+        await engine.dispose()
 
     app = FastAPI(title="Pastry shop API", lifespan=lifespan)
 

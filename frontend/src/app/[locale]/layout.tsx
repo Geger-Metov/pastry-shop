@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getTranslations } from "next-intl/server";
 
@@ -9,11 +9,10 @@ import { cn } from "cn";
 
 import "../globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+// cyrillic обязателен: язык по умолчанию - ru, без этого русский текст рисуется системным шрифтом
+const inter = Inter({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-sans",
 });
 
 const geistMono = Geist_Mono({
@@ -42,7 +41,6 @@ export default async function RootLayout({
       className={cn(
         "h-full",
         "antialiased",
-        geistSans.variable,
         geistMono.variable,
         "font-sans",
         inter.variable,
