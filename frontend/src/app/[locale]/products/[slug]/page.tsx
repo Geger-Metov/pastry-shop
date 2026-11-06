@@ -2,6 +2,8 @@ import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { getProductBySlug } from "@/lib/api/products";
 import type { Variant } from "@/lib/api/types";
@@ -34,6 +36,7 @@ async function ProductDetails({
   const t = await getTranslations();
   // getProductBySlug сам вызывает notFound(), если API ответил 404
   const product = await getProductBySlug(locale, slug);
+  const currency = getShopCurrency();
 
   const allergenNames: Record<string, string> = {
     gluten: t("allergens.gluten"),
@@ -97,19 +100,23 @@ async function ProductDetails({
           )}
 
           <h2 className="mt-8 text-lg font-medium">{t("product.options")}</h2>
-          <ul className="mt-3 divide-y rounded-xl border">
-            {product.variants.map((variant) => (
-              <li
-                key={variant.id}
-                className="flex items-center justify-between px-4 py-3"
-              >
-                <span>{variantLabel(variant)}</span>
-                <span className="font-medium">
-                  {formatPrice(variant.price, locale, getShopCurrency())}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <Card size="sm" className="mt-3">
+            <CardContent>
+              <ul className="divide-y">
+                {product.variants.map((variant) => (
+                  <li
+                    key={variant.id}
+                    className="flex items-center justify-between py-3 first:pt-0 last:pb-0"
+                  >
+                    <span>{variantLabel(variant)}</span>
+                    <span className="font-medium">
+                      {formatPrice(variant.price, locale, currency)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
 
           {product.allergens.length > 0 && (
             <>
@@ -118,11 +125,10 @@ async function ProductDetails({
               </h2>
               <ul className="mt-3 flex flex-wrap gap-2">
                 {product.allergens.map((allergen) => (
-                  <li
-                    key={allergen.id}
-                    className="bg-muted rounded-full px-3 py-1 text-sm"
-                  >
-                    {allergenNames[allergen.code] ?? allergen.code}
+                  <li key={allergen.id}>
+                    <Badge variant="secondary">
+                      {allergenNames[allergen.code] ?? allergen.code}
+                    </Badge>
                   </li>
                 ))}
               </ul>

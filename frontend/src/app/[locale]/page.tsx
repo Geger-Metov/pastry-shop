@@ -3,6 +3,13 @@ import { getLocale } from "next-intl/server";
 import { Suspense } from "react";
 
 import { SkeletonGrid } from "@/components/skeleton-grid";
+import { buttonVariants } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { getCategories } from "@/lib/api/categories";
 
@@ -16,7 +23,7 @@ export default function HomePage() {
         <p className="text-muted-foreground mt-4 text-lg">{t("subtitle")}</p>
         <Link
           href="/catalog"
-          className="bg-primary text-primary-foreground hover:bg-primary/90 mt-6 inline-block rounded-md px-5 py-2.5 text-sm font-medium"
+          className={buttonVariants({ size: "lg", className: "mt-6" })}
         >
           {t("browse")}
         </Link>
@@ -43,14 +50,16 @@ async function Categories() {
         <li key={category.id}>
           <Link
             href={`/catalog/${category.slug}`}
-            className="bg-card text-card-foreground hover:bg-muted block h-full rounded-xl border p-6"
+            className="group focus-visible:ring-ring/50 block h-full rounded-xl outline-none focus-visible:ring-3"
           >
-            <h3 className="text-lg font-medium">{category.name}</h3>
-            {category.description && (
-              <p className="text-muted-foreground mt-2 text-sm">
-                {category.description}
-              </p>
-            )}
+            <Card className="h-full transition-shadow group-hover:shadow-md">
+              <CardHeader>
+                <CardTitle className="text-lg">{category.name}</CardTitle>
+                {category.description && (
+                  <CardDescription>{category.description}</CardDescription>
+                )}
+              </CardHeader>
+            </Card>
           </Link>
         </li>
       ))}
