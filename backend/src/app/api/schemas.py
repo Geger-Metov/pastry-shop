@@ -1,13 +1,16 @@
 """Схемы ответов API. Отдельно от domain: контракт API не должен меняться вместе с моделью."""
 
+from datetime import date
 from decimal import Decimal
 from typing import Self
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.domain.allergen import Allergen
 from app.domain.category import LocalizedCategory
+from app.domain.lead import Lead
 from app.domain.locale import Locale
+from app.domain.phone import normalize_phone
 from app.domain.product import LocalizedProduct, ProductImage, ProductVariant
 
 
@@ -101,3 +104,51 @@ class ProductOut(BaseModel):
             images=[ImageOut.from_domain(i) for i in item.images],
             allergens=[AllergenOut.from_domain(a) for a in item.allergens],
         )
+
+
+class LeadIn(BaseModel):
+    model_config = ConfigDict(frozen=True)
+
+    name: str = Field(min_length=2, max_length=100)
+    phone: str
+    email: str | None = Field(default=None, max_length=255)
+    comment: str | None = Field(default=None)
+    desired_date: date | None = Field(default=None)
+    servings: int | None = Field(default=None, gt=0)
+    budget: Decimal | None = Field(default=None, ge=0)
+    decor: str | None = Field(default=None, max_length=200)
+    design_description: str | None = Field(default=None)
+
+    @classmethod
+    def from_domain(cls, item: Lead) -> Self:
+        return cls(
+            name=item.name,
+            phone=item.phone,
+            email=item.email,
+            comment=item.comment,
+            desired_date=item.desired_date,
+            servings=item.servings,
+            budget=item.budget,
+            decor=item.decor,
+            design_description=item.design_description,
+        )
+
+    @field_validator("name", "email", "comment", "decor", "design_description")
+    @classmethod
+    def _strip(cls, value: str | None) -> str | None:
+        if isinstance(value, str):
+            value = value.strip() or None
+        return value
+
+    @field_validator("phone")
+    @classmethod
+    def _normalize_phone(cls, value: str) -> str:
+        try:
+            phone = normalize_phone(value)
+        except ValueError:
+            raise ValueError("Некорректный номер телефона") from None
+        return phone
+
+
+class LeadCreated(BaseModel):
+    id: int
