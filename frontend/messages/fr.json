@@ -5,7 +5,8 @@
   },
   "nav": {
     "home": "Accueil",
-    "catalog": "Catalogue"
+    "catalog": "Catalogue",
+    "customOrder": "Commande personnalisée"
   },
   "language": {
     "label": "Langue"
@@ -20,6 +21,70 @@
     "title": "Catalogue",
     "all": "Tous les produits",
     "empty": "Rien ici pour le moment"
+  },
+  "customOrder": {
+    "title": "Commande personnalisée",
+    "subtitle": "Dites-nous quel dessert vous imaginez, nous vous recontacterons pour régler les détails.",
+    "optional": "facultatif",
+    "required": "champ obligatoire",
+    "fields": {
+      "name": {
+        "label": "Votre nom",
+        "hint": "Comment devons-nous vous appeler"
+      },
+      "phone": {
+        "label": "Téléphone",
+        "hint": "Nous vous appellerons ou vous écrirons",
+        "placeholder": "+996 555 123 456"
+      },
+      "email": {
+        "label": "E-mail",
+        "hint": "Vous pouvez laisser vide",
+        "placeholder": "nom@exemple.com"
+      },
+      "desiredDate": {
+        "label": "Date souhaitée",
+        "hint": "Le jour où vous avez besoin du dessert"
+      },
+      "servings": {
+        "label": "Nombre de parts",
+        "hint": "Combien de personnes seront à table",
+        "placeholder": "10"
+      },
+      "budget": {
+        "label": "Budget",
+        "hint": "Le montant approximatif que vous souhaitez dépenser",
+        "placeholder": "5000"
+      },
+      "decor": {
+        "label": "Décoration",
+        "hint": "Par exemple : fleurs en crème, décor doré"
+      },
+      "comment": {
+        "label": "Commentaire",
+        "hint": "Parfums, allergies, souhaits"
+      },
+      "designDescription": {
+        "label": "Description du design",
+        "hint": "Décrivez l’aspect du dessert"
+      }
+    },
+    "submit": "Envoyer la demande",
+    "sending": "Envoi…",
+    "successTitle": "Demande envoyée",
+    "successText": "Merci ! Nous vous contacterons très bientôt.",
+    "errors": {
+      "general": "Impossible d’envoyer la demande. Veuillez réessayer plus tard.",
+      "required": "Veuillez remplir ce champ",
+      "tooShort": "Trop court : au moins {min} caractères",
+      "tooLong": "Trop long : au plus {max} caractères",
+      "invalidPhone": "Saisissez le numéro au format international, par exemple +996 555 123 456",
+      "invalidEmail": "Saisissez une adresse e-mail valide",
+      "pastDate": "La date ne peut pas être dans le passé",
+      "invalidNumber": "Saisissez un nombre valide",
+      "tooSmall": "La valeur doit être d’au moins {min}",
+      "tooBig": "La valeur doit être d’au plus {max}"
+    }
   },
   "product": {
     "from": "à partir de {price}",

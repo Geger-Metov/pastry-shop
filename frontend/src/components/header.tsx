@@ -19,6 +19,9 @@ export function Header() {
           <Link href="/catalog" className="text-sm hover:underline">
             {t("catalog")}
           </Link>
+          <Link href="/custom-order" className="text-sm hover:underline">
+            {t("customOrder")}
+          </Link>
         </div>
         {/* usePathname внутри зависит от адреса: с cacheComponents ему нужен Suspense */}
         <Suspense fallback={null}>
