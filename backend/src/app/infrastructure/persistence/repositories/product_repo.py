@@ -159,7 +159,7 @@ class SqlProductRepository:
     ) -> list[LocalizedProduct]:
 
         result = await self._session.execute(stmt)
-        rows = result.tuples().all()  # list[tuple[ProductModel, Translation, Translation]]
+        rows = result.all()  # list[tuple[ProductModel, Translation, Translation]]
         if not rows:
             return []
         ids = [product.id for product, _, _ in rows]

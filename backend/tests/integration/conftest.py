@@ -12,15 +12,21 @@
 import os
 from collections.abc import AsyncIterator
 
+import httpx
 import pytest
 import pytest_asyncio
 from sqlalchemy import insert, make_url
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, create_async_engine
 
 import app.infrastructure.persistence.model  # noqa: F401  (регистрирует модели)
+from app.core.config import Settings
 from app.domain.locale import SUPPORTED_LOCALES
 from app.infrastructure.database.base import Base
+from app.infrastructure.database.session import get_session
 from app.infrastructure.persistence.model.locale import LocaleModel
+from app.main import create_app
+
+ORIGIN = "http://localhost:3000"
 
 
 def _test_database_url() -> str:
@@ -60,3 +66,23 @@ async def session(engine: AsyncEngine) -> AsyncIterator[AsyncSession]:
         ) as session:
             yield session
         await transaction.rollback()
+
+
+@pytest_asyncio.fixture
+async def client(session: AsyncSession) -> AsyncIterator[httpx.AsyncClient]:
+    """HTTP-клиент к приложению; сессия БД - та же, что видит тест."""
+    settings = Settings(
+        database_url="postgresql+asyncpg://unused/unused_test",
+        shop_currency="RUB",
+        phone_default_country_code="996",
+        cors_origins=[ORIGIN],
+    )
+    app = create_app(settings)
+
+    async def override_session() -> AsyncIterator[AsyncSession]:
+        yield session  # данные теста доступны приложению, а commit() - это commit savepoint
+
+    app.dependency_overrides[get_session] = override_session
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+        yield client

@@ -2,15 +2,14 @@
 
 from datetime import date
 from decimal import Decimal
-from typing import Self
+from typing import Annotated, Self
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, field_validator
 
 from app.domain.allergen import Allergen
 from app.domain.category import LocalizedCategory
-from app.domain.lead import Lead
+from app.domain.email import is_valid_email
 from app.domain.locale import Locale
-from app.domain.phone import normalize_phone
 from app.domain.product import LocalizedProduct, ProductImage, ProductVariant
 
 
@@ -106,48 +105,43 @@ class ProductOut(BaseModel):
         )
 
 
+# strip_whitespace срабатывает ДО проверки длины: "   " не пройдёт min_length
+Name = Annotated[str, StringConstraints(strip_whitespace=True, min_length=2, max_length=100)]
+# Только "разумный размер": нормализация в E.164 - в сценарии CreateLead (ей нужна
+# настройка phone_default_country_code)
+Phone = Annotated[str, StringConstraints(strip_whitespace=True, min_length=5, max_length=32)]
+
+
 class LeadIn(BaseModel):
+    """Форма заявки. Статус, id и даты клиент не передаёт: их задаёт сервер."""
+
     model_config = ConfigDict(frozen=True)
 
-    name: str = Field(min_length=2, max_length=100)
-    phone: str
+    name: Name
+    phone: Phone
     email: str | None = Field(default=None, max_length=255)
-    comment: str | None = Field(default=None)
-    desired_date: date | None = Field(default=None)
-    servings: int | None = Field(default=None, gt=0)
-    budget: Decimal | None = Field(default=None, ge=0)
+    comment: str | None = Field(default=None, max_length=2000)
+    desired_date: date | None = None
+    servings: int | None = Field(default=None, gt=0, le=1000)
+    # numeric(10, 2) в БД: больше цифр - ошибка БД, поэтому ограничиваем здесь
+    budget: Decimal | None = Field(default=None, ge=0, max_digits=10, decimal_places=2)
     decor: str | None = Field(default=None, max_length=200)
-    design_description: str | None = Field(default=None)
+    design_description: str | None = Field(default=None, max_length=5000)
 
+    @field_validator("email", "comment", "decor", "design_description", mode="before")
     @classmethod
-    def from_domain(cls, item: Lead) -> Self:
-        return cls(
-            name=item.name,
-            phone=item.phone,
-            email=item.email,
-            comment=item.comment,
-            desired_date=item.desired_date,
-            servings=item.servings,
-            budget=item.budget,
-            decor=item.decor,
-            design_description=item.design_description,
-        )
-
-    @field_validator("name", "email", "comment", "decor", "design_description")
-    @classmethod
-    def _strip(cls, value: str | None) -> str | None:
+    def _blank_to_none(cls, value: object) -> object:
+        """Пробелы по краям убираем, пустая строка означает "не заполнено"."""
         if isinstance(value, str):
             value = value.strip() or None
         return value
 
-    @field_validator("phone")
+    @field_validator("email")
     @classmethod
-    def _normalize_phone(cls, value: str) -> str:
-        try:
-            phone = normalize_phone(value)
-        except ValueError:
-            raise ValueError("Некорректный номер телефона") from None
-        return phone
+    def _check_email(cls, value: str | None) -> str | None:
+        if value is not None and not is_valid_email(value):
+            raise ValueError("Некорректный email")
+        return value
 
 
 class LeadCreated(BaseModel):

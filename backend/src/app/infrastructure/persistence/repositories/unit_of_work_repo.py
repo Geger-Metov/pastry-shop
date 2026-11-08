@@ -1,13 +1,11 @@
-from collections.abc import AsyncGenerator
-
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class SqlUnitOfWork:
-    async def commit(self, session: AsyncSession) -> AsyncGenerator[AsyncSession, None]:
-        try:
-            yield session
-            await session.commit()
-        except Exception:
-            await session.rollback()
-            raise
+    """Реализация UnitOfWork. Получает ТУ ЖЕ сессию, что и репозитории этого запроса."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def commit(self) -> None:
+        await self._session.commit()

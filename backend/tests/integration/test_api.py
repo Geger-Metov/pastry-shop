@@ -1,14 +1,9 @@
 """Тесты HTTP-слоя: приложение + реальная БД (сессия теста откатывается после каждого теста)."""
 
-from collections.abc import AsyncIterator
-
 import httpx
-import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import Settings
-from app.infrastructure.database.session import get_session
-from app.main import create_app
+from tests.integration.conftest import ORIGIN
 from tests.integration.factories import (
     add_allergen,
     add_category,
@@ -17,26 +12,6 @@ from tests.integration.factories import (
     add_variant,
     link_allergen,
 )
-
-ORIGIN = "http://localhost:3000"
-
-
-@pytest_asyncio.fixture
-async def client(session: AsyncSession) -> AsyncIterator[httpx.AsyncClient]:
-    settings = Settings(
-        database_url="postgresql+asyncpg://unused/unused_test",
-        shop_currency="RUB",
-        cors_origins=[ORIGIN],
-    )
-    app = create_app(settings)
-
-    async def override_session() -> AsyncIterator[AsyncSession]:
-        yield session  # та же сессия, что видит тест: данные тестов доступны приложению
-
-    app.dependency_overrides[get_session] = override_session
-    transport = httpx.ASGITransport(app=app)
-    async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
-        yield client
 
 
 async def test_list_categories_uses_default_locale(

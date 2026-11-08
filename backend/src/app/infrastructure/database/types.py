@@ -4,8 +4,8 @@ from enum import StrEnum
 
 from sqlalchemy import CheckConstraint, Enum
 
-E164_REGEX = r"^\+[1-9][0-9]{7,14}$"
-EMAIL_REGEX = r"^[^@\s]+@[^@\s]+$"
+from app.domain.email import EMAIL_REGEX
+from app.domain.phone import E164_REGEX
 
 
 def str_enum[E: StrEnum](enum_cls: type[E], length: int = 20) -> Enum:

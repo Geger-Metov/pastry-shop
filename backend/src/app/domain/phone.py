@@ -1,7 +1,8 @@
 import re
 from typing import Final
 
-_E164: Final = re.compile(r"^\+[1-9][0-9]{7,14}$")
+E164_REGEX: Final = r"^\+[1-9][0-9]{7,14}$"
+_E164: Final = re.compile(E164_REGEX)
 
 
 def is_valid_phone(value: str) -> bool:
