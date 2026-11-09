@@ -22,6 +22,7 @@ export type Translate = (
 type ValidationDetail = {
   loc: (string | number)[];
   type: string;
+  input?: unknown;
   ctx?: unknown;
 };
 
@@ -39,7 +40,16 @@ function toMessage(
   detail: ValidationDetail,
   translate: Translate,
 ): string {
-  const { type, ctx } = detail;
+  const { type, ctx, input } = detail;
+  // Пустое (или из одних пробелов) поле тоже «слишком короткое», но для
+  // пользователя это «не заполнено», а не «минимум N символов».
+  if (
+    type === "string_too_short" &&
+    typeof input === "string" &&
+    input.trim() === ""
+  ) {
+    return translate("required");
+  }
   switch (type) {
     case "missing":
       return translate("required");
