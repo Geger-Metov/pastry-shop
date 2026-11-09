@@ -13,19 +13,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-
-// Имена полей совпадают с LeadIn из API: на шаге 14 по ним
-// ошибки сервера (`loc`) привяжутся к нужному полю.
-export type FieldName =
-  | "name"
-  | "phone"
-  | "email"
-  | "desired_date"
-  | "servings"
-  | "budget"
-  | "decor"
-  | "comment"
-  | "design_description";
+import type { FieldName } from "@/lib/lead-form";
 
 const subscribeNever = () => () => {};
 const getServerToday = (): string | undefined => undefined;
