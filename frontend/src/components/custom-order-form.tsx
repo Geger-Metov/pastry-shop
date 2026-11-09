@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   useActionState,
   useEffect,
@@ -100,6 +100,7 @@ function FormField({
 export function CustomOrderForm() {
   const t = useTranslations("customOrder");
   const tNav = useTranslations("nav");
+  const locale = useLocale();
   const [state, formAction, pending] = useActionState(createLead, initialState);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -148,6 +149,7 @@ export function CustomOrderForm() {
       noValidate
       className="max-w-xl"
     >
+      <input type="hidden" name="locale" value={locale} />
       <FieldGroup>
         {state.status === "error" && state.message && (
           <div

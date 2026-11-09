@@ -1,7 +1,9 @@
 "use server";
 
+import { hasLocale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
+import { routing } from "@/i18n/routing";
 import { getApi } from "@/lib/api/client";
 import { type ErrorCode, mapValidationErrors } from "@/lib/lead-errors";
 import {
@@ -24,7 +26,13 @@ export async function createLead(
   _prev: LeadFormState,
   formData: FormData,
 ): Promise<LeadFormState> {
-  const t = await getTranslations("customOrder");
+  // Язык приходит из скрытого поля формы: в Server Action нет параметра
+  // адреса [locale], по которому его можно определить самому.
+  const rawLocale = formData.get("locale");
+  const locale = hasLocale(routing.locales, rawLocale)
+    ? rawLocale
+    : routing.defaultLocale;
+  const t = await getTranslations({ locale, namespace: "customOrder" });
   const values = readValues(formData);
 
   const servings = Number(values.servings);
