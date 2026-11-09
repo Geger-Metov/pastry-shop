@@ -83,7 +83,8 @@
       "pastDate": "The date cannot be in the past",
       "invalidNumber": "Enter a valid number",
       "tooSmall": "The value must be at least {min}",
-      "tooBig": "The value must be at most {max}"
+      "tooBig": "The value must be at most {max}",
+      "invalid": "Please check this value"
     }
   },
   "product": {

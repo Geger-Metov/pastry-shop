@@ -1,9 +1,16 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useId, useSyncExternalStore } from "react";
+import {
+  useActionState,
+  useEffect,
+  useId,
+  useRef,
+  useSyncExternalStore,
+} from "react";
 
-import { Button } from "@/components/ui/button";
+import { createLead } from "@/app/[locale]/custom-order/actions";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Field,
   FieldDescription,
@@ -13,7 +20,8 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { FieldName } from "@/lib/lead-form";
+import { Link } from "@/i18n/navigation";
+import type { FieldName, LeadFormState } from "@/lib/lead-form";
 
 const subscribeNever = () => () => {};
 const getServerToday = (): string | undefined => undefined;
@@ -23,13 +31,7 @@ function getLocalToday(): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
-type Props = {
-  /** Уже переведённые тексты ошибок по полям (появятся на шаге 14). */
-  errors?: Partial<Record<FieldName, string>>;
-  pending?: boolean;
-  /** Значения, чтобы не потерять ввод после ошибки (шаг 14). */
-  defaultValues?: Partial<Record<FieldName, string>>;
-};
+const initialState: LeadFormState = { status: "idle" };
 
 type FormFieldProps = {
   name: FieldName;
@@ -95,12 +97,23 @@ function FormField({
   );
 }
 
-export function CustomOrderForm({
-  errors = {},
-  pending = false,
-  defaultValues = {},
-}: Props) {
+export function CustomOrderForm() {
   const t = useTranslations("customOrder");
+  const tNav = useTranslations("nav");
+  const [state, formAction, pending] = useActionState(createLead, initialState);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const errors = state.status === "error" ? state.fieldErrors : {};
+  const defaultValues = state.status === "error" ? state.values : {};
+
+  // После ошибки переводим фокус на первое неверное поле
+  useEffect(() => {
+    if (state.status === "error") {
+      formRef.current
+        ?.querySelector<HTMLElement>('[aria-invalid="true"]')
+        ?.focus();
+    }
+  }, [state]);
 
   // «Сегодня» считаем после монтирования: на сервере другой часовой пояс,
   // и значение при рендере дало бы расхождение с браузером (hydration).
@@ -115,14 +128,36 @@ export function CustomOrderForm({
     requiredText: t("required"),
   };
 
+  if (state.status === "success") {
+    return (
+      <div role="status" className="max-w-xl rounded-xl border p-6">
+        <h2 className="text-2xl font-semibold">{t("successTitle")}</h2>
+        <p className="text-muted-foreground mt-2">{t("successText")}</p>
+        <Link href="/catalog" className={buttonVariants({ className: "mt-6" })}>
+          {tNav("catalog")}
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <form
-      // Шаг 13: только вёрстка. Отправку (Server Action) добавим на шаге 14.
-      onSubmit={(event) => event.preventDefault()}
+      ref={formRef}
+      action={formAction}
+      // отключаем проверку браузера: ошибки приходят с сервера и уже переведены
       noValidate
       className="max-w-xl"
     >
       <FieldGroup>
+        {state.status === "error" && state.message && (
+          <div
+            role="alert"
+            className="border-destructive/40 bg-destructive/5 text-destructive rounded-md border p-3 text-sm"
+          >
+            {state.message}
+          </div>
+        )}
+
         <FormField
           {...common}
           name="name"

@@ -83,7 +83,8 @@
       "pastDate": "La date ne peut pas être dans le passé",
       "invalidNumber": "Saisissez un nombre valide",
       "tooSmall": "La valeur doit être d’au moins {min}",
-      "tooBig": "La valeur doit être d’au plus {max}"
+      "tooBig": "La valeur doit être d’au plus {max}",
+      "invalid": "Vérifiez cette valeur"
     }
   },
   "product": {
