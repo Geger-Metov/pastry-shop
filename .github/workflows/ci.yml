@@ -135,6 +135,9 @@ jobs:
       - name: Regenerate frontend API types
         working-directory: frontend
         run: pnpm exec openapi-typescript "$RUNNER_TEMP/openapi.json" -o src/lib/api/schema.d.ts
+      - name: Format generated types with Prettier
+        working-directory: frontend
+        run: pnpm exec prettier --write src/lib/api/schema.d.ts
       - name: Fail if the committed types differ
         run: git diff --exit-code -- frontend/src/lib/api/schema.d.ts
 
