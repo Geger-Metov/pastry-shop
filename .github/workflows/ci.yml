@@ -49,7 +49,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
-          cache-dependecy-glob: backend/uv.lock
+          cache-dependency-glob: backend/uv.lock
       - name: Install dependencies
         run: uv sync --locked
       - name: Lint (ruff)
@@ -66,7 +66,13 @@ jobs:
         run: uv run pytest
 
   frontend:
+    name: frontend (Node ${{ matrix.node-version }})
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [24, 26]
     defaults:
       run:
         working-directory: frontend
@@ -75,11 +81,11 @@ jobs:
       - uses: pnpm/action-setup@v6
         with:
           package_json_file: frontend/package.json
-          cache: true
-          cache_dependency_path: frontend/pnpm-lock.yaml
       - uses: actions/setup-node@v7
         with:
-          node-version: 26
+          node-version: ${{ matrix.node-version }}
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Typecheck
@@ -88,6 +94,49 @@ jobs:
         run: pnpm lint
       - name: Build
         run: pnpm build
+
+  # Типы фронтенда (schema.d.ts) генерируются из схемы бэкенда. Если поменять API
+  # и забыть выполнить `pnpm gen:api`, закоммиченный файл устареет: ловим это здесь.
+  api-types:
+    name: API types are up to date
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      # create_app() читает настройки из окружения; к базе при этом не подключается
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/app_test
+      SHOP_CURRENCY: KGS
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.15"
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: frontend/package.json
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - name: Install backend dependencies
+        working-directory: backend
+        run: uv sync --locked
+      - name: Dump OpenAPI schema from the backend
+        working-directory: backend
+        run: >-
+          uv run python -c
+          "import json; from app.main import create_app; print(json.dumps(create_app().openapi()))"
+          > "$RUNNER_TEMP/openapi.json"
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+      - name: Regenerate frontend API types
+        working-directory: frontend
+        run: pnpm exec openapi-typescript "$RUNNER_TEMP/openapi.json" -o src/lib/api/schema.d.ts
+      - name: Fail if the committed types differ
+        run: git diff --exit-code -- frontend/src/lib/api/schema.d.ts
 
   e2e:
     name: e2e (Playwright)
@@ -99,7 +148,7 @@ jobs:
       POSTGRES_DB: app
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      SHOP_CURRENCY: KGS
+      SHOP_CURRENCY: USD
       PHONE_DEFAULT_COUNTRY_CODE: ""
     steps:
       - uses: actions/checkout@v7
@@ -123,9 +172,20 @@ jobs:
       - name: Install dependencies
         working-directory: frontend
         run: pnpm install --frozen-lockfile
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-firefox-${{ hashFiles('frontend/pnpm-lock.yaml') }}
       - name: Install Playwright browser
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         working-directory: frontend
         run: pnpm exec playwright install --with-deps firefox
+      - name: Install Playwright system dependencies
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        working-directory: frontend
+        run: pnpm exec playwright install-deps firefox
       - name: Run Playwright tests
         working-directory: frontend
         run: pnpm exec playwright test --project=firefox
