@@ -112,6 +112,12 @@ async def test_unknown_category_gives_empty_list(client: httpx.AsyncClient) -> N
     assert response.json() == []
 
 
+async def test_get_shop_currency(client: httpx.AsyncClient) -> None:
+    response = await client.get("/shop")
+    assert response.status_code == 200
+    assert response.json()["currency"] == "RUB"
+
+
 async def test_get_product_by_slug(client: httpx.AsyncClient, session: AsyncSession) -> None:
     cakes = await add_category(session, "cakes", {"ru": "Торты"})
     await add_product(session, cakes, "napoleon", {"ru": "Наполеон", "fr": "Napoléon"})

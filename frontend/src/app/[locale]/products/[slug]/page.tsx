@@ -8,7 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { getProductBySlug } from "@/lib/api/products";
 import type { Variant } from "@/lib/api/types";
 import { formatPrice } from "@/lib/format";
-import { getShopCurrency } from "@/lib/shop";
+import { getShopCurrency } from "@/lib/api/shop";
 
 export default function ProductPage({
   params,
@@ -36,7 +36,7 @@ async function ProductDetails({
   const t = await getTranslations();
   // getProductBySlug сам вызывает notFound(), если API ответил 404
   const product = await getProductBySlug(locale, slug);
-  const currency = getShopCurrency();
+  const currency = await getShopCurrency();
 
   const allergenNames: Record<string, string> = {
     gluten: t("allergens.gluten"),

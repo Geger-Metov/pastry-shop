@@ -146,3 +146,8 @@ class LeadIn(BaseModel):
 
 class LeadCreated(BaseModel):
     id: int
+
+
+class ShopOut(BaseModel):
+    model_config = ConfigDict(frozen=True)
+    currency: str

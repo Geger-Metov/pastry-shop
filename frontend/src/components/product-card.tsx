@@ -11,7 +11,7 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import type { Product } from "@/lib/api/types";
 import { formatPrice } from "@/lib/format";
-import { getShopCurrency } from "@/lib/shop";
+import { getShopCurrency } from "@/lib/api/shop";
 
 export async function ProductCard({
   product,
@@ -26,6 +26,8 @@ export async function ProductCard({
   const lowest = Math.min(
     ...product.variants.map((variant) => Number(variant.price)),
   );
+
+  const currency = await getShopCurrency();
 
   return (
     <Link
@@ -57,7 +59,7 @@ export async function ProductCard({
           <CardTitle>{product.name}</CardTitle>
           <CardDescription>
             {t("from", {
-              price: formatPrice(String(lowest), locale, getShopCurrency()),
+              price: formatPrice(String(lowest), locale, currency),
             })}
           </CardDescription>
         </CardHeader>
