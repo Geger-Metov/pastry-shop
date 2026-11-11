@@ -6,6 +6,7 @@ import { CatalogView } from "@/components/catalog-view";
 import { SkeletonGrid } from "@/components/skeleton-grid";
 import { getCategories } from "@/lib/api/categories";
 import { getProducts } from "@/lib/api/products";
+import { getShopCurrency } from "@/lib/api/shop";
 
 export default function CategoryPage({
   params,
@@ -27,9 +28,10 @@ async function CategoryProducts({
   // params - это Promise: значение известно только во время запроса
   const { category } = await params;
   const locale = await getLocale();
-  const [categories, products] = await Promise.all([
+  const [categories, products, currency] = await Promise.all([
     getCategories(locale),
     getProducts(locale, category),
+    getShopCurrency(),
   ]);
 
   // API на неизвестную категорию отвечает пустым списком, а для пользователя это 404
@@ -41,6 +43,7 @@ async function CategoryProducts({
       products={products}
       locale={locale}
       active={category}
+      currency={currency}
     />
   );
 }

@@ -5,6 +5,7 @@ import { CatalogView } from "@/components/catalog-view";
 import { SkeletonGrid } from "@/components/skeleton-grid";
 import { getCategories } from "@/lib/api/categories";
 import { getProducts } from "@/lib/api/products";
+import { getShopCurrency } from "@/lib/api/shop";
 
 export default function CatalogPage() {
   return (
@@ -19,12 +20,18 @@ export default function CatalogPage() {
 async function AllProducts() {
   const locale = await getLocale();
   // два независимых запроса идут параллельно
-  const [categories, products] = await Promise.all([
+  const [categories, products, currency] = await Promise.all([
     getCategories(locale),
     getProducts(locale),
+    getShopCurrency(),
   ]);
 
   return (
-    <CatalogView categories={categories} products={products} locale={locale} />
+    <CatalogView
+      categories={categories}
+      products={products}
+      locale={locale}
+      currency={currency}
+    />
   );
 }

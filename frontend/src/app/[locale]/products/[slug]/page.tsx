@@ -34,9 +34,11 @@ async function ProductDetails({
   const { slug } = await params;
   const locale = await getLocale();
   const t = await getTranslations();
-  // getProductBySlug сам вызывает notFound(), если API ответил 404
-  const product = await getProductBySlug(locale, slug);
-  const currency = await getShopCurrency();
+
+  const [product, currency] = await Promise.all([
+    getProductBySlug(locale, slug),
+    getShopCurrency(),
+  ]);
 
   const allergenNames: Record<string, string> = {
     gluten: t("allergens.gluten"),

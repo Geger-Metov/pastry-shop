@@ -13,9 +13,16 @@ type Props = {
   locale: Locale;
   /** slug выбранной категории; undefined - показаны все товары */
   active?: string;
+  currency: string;
 };
 
-export function CatalogView({ categories, products, locale, active }: Props) {
+export function CatalogView({
+  categories,
+  products,
+  locale,
+  active,
+  currency,
+}: Props) {
   const t = useTranslations("catalog");
   // выбранная категория - заполненная кнопка, остальные - с рамкой
   const chip = (isActive: boolean) =>
@@ -50,7 +57,12 @@ export function CatalogView({ categories, products, locale, active }: Props) {
       ) : (
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} locale={locale} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              locale={locale}
+              currency={currency}
+            />
           ))}
         </div>
       )}

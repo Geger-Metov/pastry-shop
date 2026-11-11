@@ -11,14 +11,15 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import type { Product } from "@/lib/api/types";
 import { formatPrice } from "@/lib/format";
-import { getShopCurrency } from "@/lib/api/shop";
 
 export async function ProductCard({
   product,
   locale,
+  currency,
 }: {
   product: Product;
   locale: Locale;
+  currency: string;
 }) {
   const t = await getTranslations("product");
   const image = product.images[0];
@@ -26,8 +27,6 @@ export async function ProductCard({
   const lowest = Math.min(
     ...product.variants.map((variant) => Number(variant.price)),
   );
-
-  const currency = await getShopCurrency();
 
   return (
     <Link
