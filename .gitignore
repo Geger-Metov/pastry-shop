@@ -21,6 +21,9 @@ node_modules/
 # резервные копии БД
 backups/
 
+#
+.coverage
+
 # my files
 AGENTS.md
 TODO.md
