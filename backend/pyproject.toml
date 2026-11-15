@@ -83,11 +83,25 @@ module = "tests.*"
 disallow_untyped_defs = false
 
 [tool.coverage.run]
-source = ["app"]
+# Измеряем только код приложения (миграции лежат вне src, тесты не считаем)
+source = ["src/app"]
+# Ветки: строка с if может выполниться, а одна из его сторон ни разу
 branch = true
-omit = ["src/app/scripts/*", "src/app/infrastructure/database/migrations/*"]
+omit = ["src/app/scripts/*"]
 
 [tool.coverage.report]
 show_missing = true
+# в таблице только файлы, где есть что улучшать
 skip_covered = true
-exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError"]
+# Строки, которые не нужно покрывать тестами
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+# Порог включим после первого отчёта: поставьте число чуть ниже текущего покрытия
+# и повышайте со временем, например:
+# fail_under = 85
+
+[tool.coverage.html]
+directory = "htmlcov"

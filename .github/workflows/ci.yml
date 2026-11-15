@@ -62,8 +62,19 @@ jobs:
         run: uv run alembic upgrade head
       - name: Models match migrations
         run: uv run alembic check
-      - name: Tests
-        run: uv run pytest
+      - name: Tests with coverage
+        run: uv run pytest --cov --cov-report=term-missing --cov-report=html
+      # Отчёт нужен один (на версии, как в продакшене), а не по одному на каждую версию Python
+      - name: Coverage summary
+        if: matrix.python-version == '3.15'
+        run: uv run coverage report --format=markdown >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload HTML coverage report
+        if: matrix.python-version == '3.15'
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-html
+          path: backend/htmlcov/
+          retention-days: 14
 
   frontend:
     name: frontend (Node ${{ matrix.node-version }})

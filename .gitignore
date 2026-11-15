@@ -11,6 +11,10 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
 
 # node
 node_modules/
@@ -20,9 +24,6 @@ node_modules/
 
 # резервные копии БД
 backups/
-
-#
-.coverage
 
 # my files
 AGENTS.md
