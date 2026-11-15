@@ -14,7 +14,7 @@ from app.domain.product import LocalizedProduct, ProductImage, ProductVariant
 
 
 class CategoryOut(BaseModel):
-    model_config = ConfigDict(frozen=True)
+    model_config = ConfigDict(frozen=True)  # нужен ли from_attributes или еще что-то забыл
 
     id: int
     parent_id: int | None
